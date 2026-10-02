@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Menu, X, Droplets } from "lucide-react";
+import Image from "next/image";
+import { Menu, X } from "lucide-react";
 export const navLinks = [
   { href: "#story", label: "My Story" },
   { href: "#starlight", label: "About Starlight" },
@@ -13,7 +14,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 border-b border-plum/10 bg-cream/90 backdrop-blur">
       <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
         <a href="#top" className="flex items-center gap-2 font-display text-xl font-semibold text-plum">
-          <Droplets className="h-5 w-5 text-blush" aria-hidden /> Nico Gives Back
+          <Image src="/logo.png" alt="Flamingo's Starlight Mission logo" width={40} height={40} className="h-10 w-10 shrink-0 rounded-full object-contain" priority />
+          Nico Gives Back
         </a>
         <ul className="hidden items-center gap-7 text-sm font-medium lg:flex">
           {navLinks.map((l) => (<li key={l.href}><a className="hover:text-plum" href={l.href}>{l.label}</a></li>))}
