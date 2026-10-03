@@ -2,55 +2,81 @@
 import { useState } from "react";
 import { ShieldCheck, ExternalLink } from "lucide-react";
 import { campaignConfig } from "@/lib/campaignConfig";
-const presets = [25, 50, 100, 250];
 export default function DonationForm() {
-  const [preset, setPreset] = useState<number | "custom">(50);
-  const [custom, setCustom] = useState("");
-  const [name, setName] = useState("");
+  const [amount, setAmount] = useState("");
+  const [receiptName, setReceiptName] = useState("");
   const [error, setError] = useState("");
-  const amount = preset === "custom" ? Number(custom) : preset;
-  function go(e: React.FormEvent) {
+  const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  async function submitReceipt(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!name.trim()) return setError("Enter your full name to continue.");
-    if (!amount || amount < 1) return setError("Enter a donation amount of $1 or more.");
     setError("");
-    // Intent only. Payment happens on Starlight's platform; this never updates the fundraising total.
-    window.open(campaignConfig.starLightDonationUrl, "_blank", "noopener,noreferrer");
+    setSubmitted(false);
+    setSending(true);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    try {
+      const response = await fetch("/api/donations", { method: "POST", body: data });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error ?? "Couldn't submit your receipt.");
+      form.reset();
+      setAmount("");
+      setReceiptName("");
+      setSubmitted(true);
+      window.dispatchEvent(new Event("donation-submitted"));
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "Couldn't submit your receipt.");
+    } finally {
+      setSending(false);
+    }
   }
-  const sel = "border-plum bg-plum text-cream";
-  const unsel = "border-plum/15 text-plum hover:border-plum";
   const input = "mt-1 w-full rounded-xl border-2 border-plum/15 px-4 py-3 font-normal text-ink focus:border-plum focus:outline-none";
   return (
     <section id="donate" aria-labelledby="donate-h" className="section">
       <div className="grid gap-10 md:grid-cols-2 md:items-start">
         <div>
           <h2 id="donate-h" className="h2">Make a Difference Today</h2>
-          <p className="mt-4 max-w-md text-lg">Choose an amount and continue to the official Starlight donation page to complete your donation.</p>
+          <p className="mt-4 max-w-md text-lg">Donate directly to Starlight, then send us your receipt. Submitted amounts are added to the campaign total automatically.</p>
           <div className="mt-8 rounded-3xl bg-plum/[0.05] p-6">
             <h3 className="flex items-center gap-2 font-display text-xl font-semibold text-plum"><ShieldCheck className="h-5 w-5 text-blush" aria-hidden /> Your Donation Goes Through Starlight</h3>
-            <p className="mt-2">Starlight does not provide a public payment API, so this website does not process or hold your donation. When you choose to donate, you'll be taken to Starlight's official donation platform to complete your contribution.</p>
+            <p className="mt-2">Your payment goes to Starlight, not this website. The amount you enter is added when you submit your receipt, but this site cannot independently verify the payment.</p>
           </div>
         </div>
-        <form onSubmit={go} className="rounded-3xl bg-white p-6 shadow-soft md:p-8" noValidate>
-          <fieldset>
-            <legend className="font-semibold text-plum">Donation amount</legend>
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              {presets.map((p) => (
-                <button type="button" key={p} aria-pressed={preset === p} onClick={() => setPreset(p)} className={`rounded-2xl border-2 py-3.5 text-lg font-semibold transition ${preset === p ? sel : unsel}`}>${p}</button>
-              ))}
-              <button type="button" aria-pressed={preset === "custom"} onClick={() => setPreset("custom")} className={`col-span-2 rounded-2xl border-2 py-3.5 font-semibold transition ${preset === "custom" ? sel : unsel}`}>Custom Amount</button>
-            </div>
-          </fieldset>
-          <label className="mt-5 block font-semibold text-plum">Full Name
-            <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" className={input} />
-          </label>
-          <label className="mt-4 block font-semibold text-plum">Donation Amount (AUD)
-            <input inputMode="decimal" value={preset === "custom" ? custom : String(preset)} readOnly={preset !== "custom"} onChange={(e) => setCustom(e.target.value.replace(/[^0-9.]/g, ""))} placeholder="Enter amount" className={`${input} read-only:bg-plum/[0.04]`} />
-          </label>
-          {error && <p role="alert" className="mt-3 text-sm font-medium text-[#b3264f]">{error}</p>}
-          <button type="submit" className="btn-plum mt-6 w-full text-lg">Continue to Donate <ExternalLink className="h-5 w-5" aria-hidden /></button>
-          <p className="mt-3 text-center text-sm text-ink/70">Your donation will be completed securely through Starlight's official donation platform.</p>
-        </form>
+        <div className="rounded-3xl bg-white p-6 shadow-soft md:p-8">
+          <a href={campaignConfig.starLightDonationUrl} target="_blank" rel="noreferrer" className="btn-plum flex w-full items-center justify-center gap-2 text-lg">
+            Pay Starlight <ExternalLink className="h-5 w-5" aria-hidden />
+          </a>
+          <p className="mt-3 text-sm text-ink/70">On Starlight's page, choose “Add organisation” and enter “Flamingo Plumbing and Roofing.” After paying, return here to submit your receipt.</p>
+          <form onSubmit={submitReceipt} className="mt-7 border-t border-plum/10 pt-6">
+            <h3 className="font-display text-xl font-semibold text-plum">Submit your payment receipt</h3>
+            <label className="mt-4 block font-semibold text-plum">Full Name
+              <input name="name" required maxLength={120} autoComplete="name" className={input} />
+            </label>
+            <label className="mt-4 block font-semibold text-plum">Email Address
+              <input name="email" required type="email" maxLength={254} autoComplete="email" className={input} />
+            </label>
+            <label className="mt-4 block font-semibold text-plum">Donation Amount (AUD)
+              <input name="amount" required type="number" min="1" max="100000" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount paid" className={input} />
+            </label>
+            <label className="mt-4 block font-semibold text-plum">Payment reference <span className="font-normal text-ink/60">(optional)</span>
+              <input name="reference" maxLength={120} className={input} />
+            </label>
+            <label className="mt-4 block font-semibold text-plum">Payment receipt
+              <input name="receipt" required type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onChange={(e) => setReceiptName(e.target.files?.[0]?.name ?? "")} className={`${input} file:mr-3 file:rounded-md file:border-0 file:bg-plum/10 file:px-3 file:py-2 file:font-semibold file:text-plum`} />
+              <span className="mt-1 block text-sm font-normal text-ink/60">PDF, JPG, PNG or WebP, up to 10 MB.</span>
+            </label>
+            <label className="mt-4 flex items-start gap-3 text-sm text-ink/80">
+              <input name="show_publicly" type="checkbox" value="true" className="mt-1 h-4 w-4 accent-plum" />
+              <span>Show my first name and donation amount in the recent donations list.</span>
+            </label>
+            <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
+            {receiptName && <p className="mt-2 text-sm text-ink/70">Selected: {receiptName}</p>}
+            {error && <p role="alert" className="mt-3 text-sm font-medium text-[#b3264f]">{error}</p>}
+            {submitted && <p role="status" className="mt-3 text-sm font-medium text-green-800">Receipt received. Your submitted amount has been added to the campaign total.</p>}
+            <button type="submit" disabled={sending} className="btn-plum mt-6 w-full text-lg disabled:cursor-wait disabled:opacity-60">{sending ? "Submitting…" : "Submit Receipt"}</button>
+            <p className="mt-3 text-center text-sm text-ink/70">Your receipt is stored privately for campaign records. Submitted amounts are not independently verified.</p>
+          </form>
+        </div>
       </div>
     </section>
   );

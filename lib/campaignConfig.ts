@@ -1,10 +1,10 @@
 // Single source of truth. Update totalRaised ONLY from verified Starlight data.
 export const campaignConfig = {
   campaignName: "Nico Gives Back",
-  goalAmount: 25000,
-  totalRaised: 12450, // placeholder: replace with a verified figure (manual or from a verified source)
+  goalAmount: 50000,
+  totalRaised: 1050,
   starLightDonationUrl:
-    process.env.NEXT_PUBLIC_STARLIGHT_DONATION_URL ?? "https://www.starlight.org.au/donate",
+    process.env.NEXT_PUBLIC_STARLIGHT_DONATION_URL ?? "https://www.starlight.org.au/support-us/donate-to-starlight/donate-to-bring-happiness-to-sick-kids/",
   starlightWebsite: "https://www.starlight.org.au",
 };
 export const percentRaised = Math.min(

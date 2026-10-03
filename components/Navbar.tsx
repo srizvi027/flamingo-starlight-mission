@@ -13,9 +13,8 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-plum/10 bg-cream/90 backdrop-blur">
       <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <a href="#top" className="flex items-center gap-2 font-display text-xl font-semibold text-plum">
-          <Image src="/logo.png" alt="Flamingo's Starlight Mission logo" width={40} height={40} className="h-10 w-10 shrink-0 rounded-full object-contain" priority />
-          Nico Gives Back
+        <a href="#top" aria-label="Flamingo Starlight Mission home" className="flex items-center">
+          <Image src="/logo.png" alt="Flamingo Starlight Mission" width={56} height={56} className="h-12 w-12 shrink-0 rounded-full object-contain sm:h-14 sm:w-14" priority />
         </a>
         <ul className="hidden items-center gap-7 text-sm font-medium lg:flex">
           {navLinks.map((l) => (<li key={l.href}><a className="hover:text-plum" href={l.href}>{l.label}</a></li>))}
