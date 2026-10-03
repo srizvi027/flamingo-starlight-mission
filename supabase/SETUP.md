@@ -11,6 +11,6 @@ NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SECRET_KEY=your-secret-key
 ```
 
-5. Restart the Next.js server. Each successfully submitted receipt is saved privately and its entered amount is included in the public total. The recent-donations list shows Nico's initial $1,050 gift and new donors who opt in, displaying only their first name and amount. The progress bar refreshes within 30 seconds.
+5. Restart the Next.js server. Each successfully submitted receipt is saved privately and its entered amount is included in the public total. The recent-donations list starts with Nico's $550 and Joanna's $500 gifts, then shows new donors who opt in using only their first name and amount. The progress bar refreshes within 30 seconds.
 6. Before launch, set `totalRaised` in `lib/campaignConfig.ts` to the campaign's starting amount.
 7. Receipt amounts are donor-reported and are not confirmed by Starlight or verified by this website. For deployment, set the same environment variables in the hosting provider's server-side settings. Keep `SUPABASE_SECRET_KEY` private.
