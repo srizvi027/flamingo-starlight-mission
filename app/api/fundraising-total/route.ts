@@ -16,7 +16,8 @@ export async function GET() {
       { totalRaised: campaignConfig.totalRaised + submitted },
       { headers: { "Cache-Control": "no-store" } },
     );
-  } catch {
+  } catch (error) {
+    console.error("Fundraising total could not be loaded:", error);
     return NextResponse.json(
       { totalRaised: campaignConfig.totalRaised },
       { headers: { "Cache-Control": "no-store" } },

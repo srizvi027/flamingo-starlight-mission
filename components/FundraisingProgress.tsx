@@ -36,7 +36,7 @@ export default function FundraisingProgress() {
         <p className="mt-1 text-lg">raised of {money(campaignConfig.goalAmount)} goal</p>
         <div className="mx-auto mt-8 max-w-3xl">
           <div className="relative h-8 rounded-full bg-plum/10 p-1" role="progressbar" aria-valuenow={percentRaised} aria-valuemin={0} aria-valuemax={100} aria-label="Fundraising progress">
-            <motion.div className="relative h-full rounded-full bg-plum" initial={{ width: 0 }} whileInView={{ width: `${percentRaised}%` }} viewport={{ once: true }} transition={{ duration: 1.4, ease: "easeOut" }}>
+            <motion.div className="relative h-full rounded-full bg-plum" initial={{ width: 0 }} animate={{ width: `${percentRaised}%` }} transition={{ duration: 1.4, ease: "easeOut" }}>
               <Star className="absolute -right-3 -top-3 h-9 w-9 fill-sun text-sun drop-shadow" aria-hidden />
             </motion.div>
           </div>

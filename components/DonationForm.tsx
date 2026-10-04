@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ShieldCheck, ExternalLink, LoaderCircle } from "lucide-react";
+import { ShieldCheck, ExternalLink, LoaderCircle, Star } from "lucide-react";
 import { campaignConfig } from "@/lib/campaignConfig";
 export default function DonationForm() {
   const [amount, setAmount] = useState("");
@@ -24,7 +24,7 @@ export default function DonationForm() {
       const destination = new URL(window.location.href);
       destination.hash = "recent-donations";
       window.history.replaceState(null, "", destination.toString());
-      window.setTimeout(() => window.location.reload(), 1200);
+      window.setTimeout(() => window.location.reload(), 1400);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Couldn't submit your receipt.");
       setSending(false);
@@ -82,6 +82,18 @@ export default function DonationForm() {
           </form>
         </div>
       </div>
+      {sending && submitted && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/30 px-5 backdrop-blur-sm" role="status" aria-live="polite">
+          <div className="flex w-full max-w-xs flex-col items-center rounded-2xl bg-white px-8 py-9 text-center shadow-soft">
+            <div className="relative flex h-16 w-16 items-center justify-center">
+              <LoaderCircle className="absolute h-16 w-16 animate-spin text-plum/25" aria-hidden />
+              <Star className="h-8 w-8 animate-pulse fill-sun text-plum" aria-hidden />
+            </div>
+            <p className="mt-4 font-display text-xl font-semibold text-plum">Donation received</p>
+            <p className="mt-1 text-sm text-ink/70">Refreshing the fundraiser…</p>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
