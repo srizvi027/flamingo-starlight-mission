@@ -38,8 +38,8 @@ export async function POST(request: Request) {
 
     const donorName = String(form.get("name") ?? "").trim();
     const donorEmail = String(form.get("email") ?? "").trim().toLowerCase();
+    const phone = String(form.get("phone") ?? "").trim();
     const amount = Number(form.get("amount"));
-    const paymentReference = String(form.get("reference") ?? "").trim().slice(0, 120);
     const organization = "Flamingo Plumbing and Roofing";
     const receipt = form.get("receipt");
 
@@ -48,6 +48,9 @@ export async function POST(request: Request) {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donorEmail) || donorEmail.length > 254) {
       return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+    }
+    if (!phone || phone.length > 32) {
+      return NextResponse.json({ error: "Enter your phone number (up to 32 characters)." }, { status: 400 });
     }
     if (!Number.isFinite(amount) || amount < 1 || amount > 100000) {
       return NextResponse.json({ error: "Enter a donation amount between $1 and $100,000." }, { status: 400 });
@@ -70,9 +73,9 @@ export async function POST(request: Request) {
     const { error: insertError } = await supabase.from("donations").insert({
       donor_name: donorName,
       donor_email: donorEmail,
+      phone_number: phone,
       amount: Math.round(amount * 100) / 100,
       organization,
-      payment_reference: paymentReference || null,
       receipt_path: receiptPath,
       receipt_name: receipt.name.slice(0, 255),
       show_publicly: String(form.get("show_publicly") ?? "") === "true",

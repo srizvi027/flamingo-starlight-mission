@@ -2,6 +2,7 @@ create table if not exists public.donations (
   id uuid primary key default gen_random_uuid(),
   donor_name text not null,
   donor_email text not null,
+  phone_number text,
   amount numeric(10, 2) not null check (amount > 0),
   organization text not null default 'Flamingo Plumbing and Roofing',
   payment_reference text,
@@ -13,6 +14,9 @@ create table if not exists public.donations (
 
 alter table public.donations
   add column if not exists show_publicly boolean not null default false;
+
+alter table public.donations
+  add column if not exists phone_number text;
 
 alter table public.donations enable row level security;
 revoke all on public.donations from anon, authenticated;

@@ -4,7 +4,7 @@ export const campaignConfig = {
   goalAmount: 50000,
   totalRaised: 1050,
   starLightDonationUrl:
-    process.env.NEXT_PUBLIC_STARLIGHT_DONATION_URL ?? "https://www.starlight.org.au/support-us/donate-to-starlight/donate-to-bring-happiness-to-sick-kids/",
+    process.env.NEXT_PUBLIC_STARLIGHT_DONATION_URL ?? "https://www.starlight.org.au/donate/?amount=39&selection=once",
   starlightWebsite: "https://www.starlight.org.au",
 };
 export const percentRaised = Math.min(

@@ -17,10 +17,13 @@ export default function FundraisingProgress() {
         // Keep showing the configured baseline when the donation service is unavailable.
       }
     }
+    const handleSubmission = () => { void refreshTotal(); };
     void refreshTotal();
+    window.addEventListener("donation-submitted", handleSubmission);
     const timer = window.setInterval(refreshTotal, 30_000);
     return () => {
       active = false;
+      window.removeEventListener("donation-submitted", handleSubmission);
       window.clearInterval(timer);
     };
   }, []);

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ShieldCheck, ExternalLink } from "lucide-react";
+import { ShieldCheck, ExternalLink, LoaderCircle } from "lucide-react";
 import { campaignConfig } from "@/lib/campaignConfig";
 export default function DonationForm() {
   const [amount, setAmount] = useState("");
@@ -19,14 +19,14 @@ export default function DonationForm() {
       const response = await fetch("/api/donations", { method: "POST", body: data });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Couldn't submit your receipt.");
-      form.reset();
-      setAmount("");
-      setReceiptName("");
       setSubmitted(true);
       window.dispatchEvent(new Event("donation-submitted"));
+      const destination = new URL(window.location.href);
+      destination.hash = "recent-donations";
+      window.history.replaceState(null, "", destination.toString());
+      window.setTimeout(() => window.location.reload(), 1200);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Couldn't submit your receipt.");
-    } finally {
       setSending(false);
     }
   }
@@ -49,6 +49,7 @@ export default function DonationForm() {
           <p className="mt-3 text-sm text-ink/70">On Starlight's page, choose “Add organisation” and enter “Flamingo Plumbing and Roofing.” After paying, return here to submit your receipt.</p>
           <form onSubmit={submitReceipt} className="mt-7 border-t border-plum/10 pt-6">
             <h3 className="font-display text-xl font-semibold text-plum">Submit your payment receipt</h3>
+            <p className="mt-4 text-plum">Ensure to click the box I am donating on behalf of an organisation and write &quot;<strong>Flamingo Plumbing and roofing</strong>&quot;</p>
             <label className="mt-4 block font-semibold text-plum">Full Name
               <input name="name" required maxLength={120} autoComplete="name" className={input} />
             </label>
@@ -58,8 +59,8 @@ export default function DonationForm() {
             <label className="mt-4 block font-semibold text-plum">Donation Amount (AUD)
               <input name="amount" required type="number" min="1" max="100000" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount paid" className={input} />
             </label>
-            <label className="mt-4 block font-semibold text-plum">Payment reference <span className="font-normal text-ink/60">(optional)</span>
-              <input name="reference" maxLength={120} className={input} />
+            <label className="mt-4 block font-semibold text-plum">Phone Number
+              <input name="phone" required type="tel" maxLength={32} autoComplete="tel" className={input} />
             </label>
             <label className="mt-4 block font-semibold text-plum">Payment receipt
               <input name="receipt" required type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onChange={(e) => setReceiptName(e.target.files?.[0]?.name ?? "")} className={`${input} file:mr-3 file:rounded-md file:border-0 file:bg-plum/10 file:px-3 file:py-2 file:font-semibold file:text-plum`} />
@@ -72,8 +73,11 @@ export default function DonationForm() {
             <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
             {receiptName && <p className="mt-2 text-sm text-ink/70">Selected: {receiptName}</p>}
             {error && <p role="alert" className="mt-3 text-sm font-medium text-[#b3264f]">{error}</p>}
-            {submitted && <p role="status" className="mt-3 text-sm font-medium text-green-800">Receipt received. Your submitted amount has been added to the campaign total.</p>}
-            <button type="submit" disabled={sending} className="btn-plum mt-6 w-full text-lg disabled:cursor-wait disabled:opacity-60">{sending ? "Submitting…" : "Submit Receipt"}</button>
+            {submitted && <p role="status" className="mt-3 text-sm font-medium text-green-800">Receipt received. Refreshing to show the updated total and recent donations…</p>}
+            <button type="submit" disabled={sending} className="btn-plum mt-6 w-full text-lg disabled:cursor-wait disabled:opacity-60">
+              {sending && <LoaderCircle className="h-5 w-5 animate-spin" aria-hidden />}
+              {submitted ? "Refreshing…" : sending ? "Submitting receipt…" : "Submit Receipt"}
+            </button>
             <p className="mt-3 text-center text-sm text-ink/70">Your receipt is stored privately for campaign records. Submitted amounts are not independently verified.</p>
           </form>
         </div>

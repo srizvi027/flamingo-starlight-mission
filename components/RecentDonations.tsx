@@ -42,7 +42,7 @@ export default function RecentDonations() {
   const visibleDonations = expanded ? donations : donations.slice(0, 3);
 
   return (
-    <section aria-labelledby="recent-donations-heading" className="bg-plum/[0.04]">
+    <section id="recent-donations" aria-labelledby="recent-donations-heading" className="bg-plum/[0.04]">
       <div className="section !py-12">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <h2 id="recent-donations-heading" className="font-display text-2xl font-semibold text-plum">Recent donations</h2>
