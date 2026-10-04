@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { campaignConfig } from "@/lib/campaignConfig";
+import { getDonationTotals } from "@/lib/donationTotals";
 import { donationReceiptBucket, getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
@@ -91,12 +92,13 @@ export async function POST(request: Request) {
     });
     if (insertError) throw insertError;
 
-    const { data: totals, error: totalsError } = await supabase.rpc("get_donation_totals");
-    if (totalsError) console.error("Donation was saved, but its updated total could not be loaded:", totalsError);
-    const submittedTotal = Number(totals?.submittedTotal);
-    const totalRaised = Number.isFinite(submittedTotal)
-      ? campaignConfig.totalRaised + submittedTotal
-      : undefined;
+    let totalRaised: number | undefined;
+    try {
+      const totals = await getDonationTotals();
+      totalRaised = campaignConfig.totalRaised + totals.submittedTotal;
+    } catch (totalsError) {
+      console.error("Donation was saved, but its updated total could not be loaded:", totalsError);
+    }
 
     return NextResponse.json({ ok: true, totalRaised }, { status: 201 });
   } catch (error) {

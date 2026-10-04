@@ -5,19 +5,24 @@ import { LoaderCircle, Star } from "lucide-react";
 import { campaignConfig, money } from "@/lib/campaignConfig";
 export default function FundraisingProgress() {
   const [totalRaised, setTotalRaised] = useState<number | null>(null);
+  const [liveTotalAvailable, setLiveTotalAvailable] = useState<boolean | null>(null);
   useEffect(() => {
     let active = true;
     async function refreshTotal() {
       try {
         const response = await fetch("/api/fundraising-total", { cache: "no-store" });
-        if (!response.ok) {
-          if (active) setTotalRaised((current) => current ?? campaignConfig.totalRaised);
-          return;
-        }
+        if (!response.ok) throw new Error("Fundraising total request failed.");
         const result = await response.json();
-        if (active && Number.isFinite(result.totalRaised)) setTotalRaised(result.totalRaised);
+        if (!Number.isFinite(result.totalRaised)) throw new Error("Fundraising total response was invalid.");
+        if (active) {
+          setTotalRaised(result.totalRaised);
+          setLiveTotalAvailable(true);
+        }
       } catch {
-        if (active) setTotalRaised((current) => current ?? campaignConfig.totalRaised);
+        if (active) {
+          setTotalRaised((current) => current ?? campaignConfig.totalRaised);
+          setLiveTotalAvailable(false);
+        }
       }
     }
     const handleSubmission = (event: Event) => {
@@ -57,6 +62,9 @@ export default function FundraisingProgress() {
           ) : money(totalRaised)}
         </p>
         <p className="mt-1 text-lg">raised of {money(campaignConfig.goalAmount)} goal</p>
+        {liveTotalAvailable === false && (
+          <p role="status" className="mt-2 text-sm text-ink/70">Live total unavailable; showing the campaign starting amount.</p>
+        )}
         <div className="mx-auto mt-8 max-w-3xl">
           <div className="relative h-8 rounded-full bg-plum/10 p-1" role="progressbar" aria-valuenow={percentRaised} aria-valuemin={0} aria-valuemax={100} aria-label="Fundraising progress">
             <motion.div className="relative h-full rounded-full bg-plum" initial={{ width: 0 }} animate={{ width: `${percentRaised}%` }} transition={{ duration: 1.4, ease: "easeOut" }}>

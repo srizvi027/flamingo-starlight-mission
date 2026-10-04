@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { campaignConfig } from "@/lib/campaignConfig";
-import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { getDonationTotals } from "@/lib/donationTotals";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -13,11 +13,7 @@ const noCacheHeaders = {
 
 export async function GET() {
   try {
-    const { data, error } = await getSupabaseAdmin().rpc("get_donation_totals");
-
-    if (error) throw error;
-    const donationCount = Number(data?.donationCount ?? 0);
-    const submitted = Number(data?.submittedTotal ?? 0);
+    const { donationCount, submittedTotal: submitted } = await getDonationTotals();
     if (!Number.isFinite(donationCount) || !Number.isFinite(submitted)) {
       throw new Error("The donation totals function returned invalid data.");
     }
