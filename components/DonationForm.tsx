@@ -20,7 +20,7 @@ export default function DonationForm() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Couldn't submit your receipt.");
       setSubmitted(true);
-      window.dispatchEvent(new Event("donation-submitted"));
+      window.dispatchEvent(new CustomEvent("donation-submitted", { detail: { totalRaised: result.totalRaised } }));
       const destination = new URL(window.location.href);
       destination.hash = "recent-donations";
       window.history.replaceState(null, "", destination.toString());
