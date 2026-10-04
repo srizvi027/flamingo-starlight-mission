@@ -3,6 +3,7 @@ import { campaignConfig } from "@/lib/campaignConfig";
 import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET() {
   try {
