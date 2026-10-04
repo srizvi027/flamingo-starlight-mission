@@ -12,6 +12,9 @@ import ImpactSection from "@/components/ImpactSection";
 import FinalCTA from "@/components/FinalCTA";
 import Footer from "@/components/Footer";
 import StickyDonate from "@/components/StickyDonate";
+
+export const dynamic = "force-dynamic";
+
 export default function Page() {
   return (<>
     <Navbar />
