@@ -19,12 +19,12 @@ export default function DonationForm() {
       const response = await fetch("/api/donations", { method: "POST", body: data });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Couldn't submit your receipt.");
+      form.reset();
+      setAmount("");
+      setReceiptName("");
       setSubmitted(true);
       window.dispatchEvent(new CustomEvent("donation-submitted", { detail: { totalRaised: result.totalRaised } }));
-      const destination = new URL(window.location.href);
-      destination.hash = "recent-donations";
-      window.history.replaceState(null, "", destination.toString());
-      window.setTimeout(() => window.location.reload(), 1400);
+      window.setTimeout(() => setSending(false), 650);
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Couldn't submit your receipt.");
       setSending(false);
@@ -73,10 +73,10 @@ export default function DonationForm() {
             <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
             {receiptName && <p className="mt-2 text-sm text-ink/70">Selected: {receiptName}</p>}
             {error && <p role="alert" className="mt-3 text-sm font-medium text-[#b3264f]">{error}</p>}
-            {submitted && <p role="status" className="mt-3 text-sm font-medium text-green-800">Receipt received. Refreshing to show the updated total and recent donations…</p>}
+            {submitted && <p role="status" className="mt-3 text-sm font-medium text-green-800">Receipt received. The total and recent donations are updated.</p>}
             <button type="submit" disabled={sending} className="btn-plum mt-6 w-full text-lg disabled:cursor-wait disabled:opacity-60">
               {sending && <LoaderCircle className="h-5 w-5 animate-spin" aria-hidden />}
-              {submitted ? "Refreshing…" : sending ? "Submitting receipt…" : "Submit Receipt"}
+              {sending ? "Submitting receipt…" : submitted ? "Receipt Submitted" : "Submit Receipt"}
             </button>
             <p className="mt-3 text-center text-sm text-ink/70">Your receipt is stored privately for campaign records. Submitted amounts are not independently verified.</p>
           </form>
