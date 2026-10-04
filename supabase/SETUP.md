@@ -1,7 +1,7 @@
 # Supabase setup
 
 1. Create a Supabase project and open **SQL Editor** in its dashboard.
-2. Run the contents of `supabase/schema.sql`. This creates the donations table and a private receipt bucket. If the table already exists, rerun the updated script to add the public-list consent and phone columns; existing donors stay private by default. The browser has no direct database or storage access; only the server uses the secret key.
+2. Run the contents of `supabase/schema.sql`. This creates the donations table and a private receipt bucket. If the table already exists, rerun the updated script to add the public-list consent and phone columns and install the fundraising-total function; existing donors stay private by default. The browser has no direct database or storage access; only the server uses the secret key.
 3. Copy the project URL and secret key from **Project Settings → API Keys**. Never expose the secret key in a `NEXT_PUBLIC_` variable or commit it.
 4. Add these values to `.env.local` (or your existing `.env` file):
 

@@ -22,6 +22,22 @@ alter table public.donations enable row level security;
 revoke all on public.donations from anon, authenticated;
 grant all on public.donations to service_role;
 
+create or replace function public.get_donation_totals()
+returns jsonb
+language sql
+security definer
+set search_path = ''
+as $$
+  select pg_catalog.jsonb_build_object(
+    'donationCount', count(*),
+    'submittedTotal', coalesce(sum(amount), 0)
+  )
+  from public.donations;
+$$;
+
+revoke all on function public.get_donation_totals() from public, anon, authenticated;
+grant execute on function public.get_donation_totals() to anon, authenticated, service_role;
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'donation-receipts',

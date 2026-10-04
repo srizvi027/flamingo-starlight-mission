@@ -7,17 +7,18 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const { data, error } = await getSupabaseAdmin()
-      .from("donations")
-      .select("amount");
+    const { data, error } = await getSupabaseAdmin().rpc("get_donation_totals");
 
     if (error) throw error;
-    const donations = data ?? [];
-    const submitted = donations.reduce((sum, donation) => sum + Number(donation.amount), 0);
+    const donationCount = Number(data?.donationCount ?? 0);
+    const submitted = Number(data?.submittedTotal ?? 0);
+    if (!Number.isFinite(donationCount) || !Number.isFinite(submitted)) {
+      throw new Error("The donation totals function returned invalid data.");
+    }
     return NextResponse.json(
       {
         totalRaised: campaignConfig.totalRaised + submitted,
-        donationCount: donations.length,
+        donationCount,
         submittedTotal: submitted,
       },
       { headers: { "Cache-Control": "no-store" } },
