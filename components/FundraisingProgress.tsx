@@ -27,7 +27,7 @@ export default function FundraisingProgress() {
       window.clearInterval(timer);
     };
   }, []);
-  const percentRaised = Math.min(100, Math.round((totalRaised / campaignConfig.goalAmount) * 1000) / 10);
+  const percentRaised = Math.min(100, Math.round((totalRaised / campaignConfig.goalAmount) * 10000) / 100);
   return (
     <section aria-labelledby="progress-h" className="bg-plum/[0.04]">
       <div className="section !py-16 text-center">
