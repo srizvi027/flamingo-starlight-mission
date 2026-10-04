@@ -5,6 +5,12 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+const noCacheHeaders = {
+  "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+  "CDN-Cache-Control": "no-store",
+  "Vercel-CDN-Cache-Control": "no-store",
+};
+
 export async function GET() {
   try {
     const { data, error } = await getSupabaseAdmin().rpc("get_donation_totals");
@@ -21,13 +27,13 @@ export async function GET() {
         donationCount,
         submittedTotal: submitted,
       },
-      { headers: { "Cache-Control": "no-store" } },
+      { headers: noCacheHeaders },
     );
   } catch (error) {
     console.error("Fundraising total could not be loaded:", error);
     return NextResponse.json(
       { totalRaised: campaignConfig.totalRaised, donationCount: null, submittedTotal: null },
-      { headers: { "Cache-Control": "no-store" } },
+      { status: 503, headers: noCacheHeaders },
     );
   }
 }

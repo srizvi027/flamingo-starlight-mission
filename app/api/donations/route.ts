@@ -4,6 +4,13 @@ import { campaignConfig } from "@/lib/campaignConfig";
 import { donationReceiptBucket, getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const noCacheHeaders = {
+  "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",
+  "CDN-Cache-Control": "no-store",
+  "Vercel-CDN-Cache-Control": "no-store",
+};
 
 const maxReceiptSize = 10 * 1024 * 1024;
 const allowedTypes = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
@@ -23,7 +30,7 @@ export async function GET() {
       name: donation.donor_name.trim().split(/\s+/)[0] || "Supporter",
       amount: Number(donation.amount),
     }));
-    return NextResponse.json({ donations }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ donations }, { headers: noCacheHeaders });
   } catch (error) {
     console.error("Recent donations could not be loaded:", error);
     return NextResponse.json({ error: "Recent donations are temporarily unavailable." }, { status: 503 });

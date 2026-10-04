@@ -28,12 +28,19 @@ export default function FundraisingProgress() {
       }
       void refreshTotal();
     };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") void refreshTotal();
+    };
     void refreshTotal();
     window.addEventListener("donation-submitted", handleSubmission);
-    const timer = window.setInterval(refreshTotal, 30_000);
+    window.addEventListener("focus", refreshTotal);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const timer = window.setInterval(refreshTotal, 10_000);
     return () => {
       active = false;
       window.removeEventListener("donation-submitted", handleSubmission);
+      window.removeEventListener("focus", refreshTotal);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.clearInterval(timer);
     };
   }, []);
