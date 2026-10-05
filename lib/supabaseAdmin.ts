@@ -12,5 +12,8 @@ export function getSupabaseAdmin() {
 
   return createClient(url, secretKey, {
     auth: { autoRefreshToken: false, persistSession: false },
+    // Next.js 14 caches fetch() results by default. Without this, Supabase reads
+    // (donation totals, recent donations) are served stale until the cache is purged.
+    global: { fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }) },
   });
 }

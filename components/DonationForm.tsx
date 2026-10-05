@@ -57,7 +57,7 @@ export default function DonationForm() {
               <input name="email" required type="email" maxLength={254} autoComplete="email" className={input} />
             </label>
             <label className="mt-4 block font-semibold text-plum">Donation Amount (AUD)
-              <input name="amount" required type="number" min="1" max="100000" step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount paid" className={input} />
+              <input name="amount" required type="number" min="1" max={campaignConfig.maxDonationAmount} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Enter amount paid" className={input} />
             </label>
             <label className="mt-4 block font-semibold text-plum">Phone Number
               <input name="phone" required type="tel" maxLength={32} autoComplete="tel" className={input} />

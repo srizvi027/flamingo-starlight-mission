@@ -6,6 +6,8 @@ import { donationReceiptBucket, getSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
 
 const noCacheHeaders = {
   "Cache-Control": "no-store, no-cache, max-age=0, must-revalidate",

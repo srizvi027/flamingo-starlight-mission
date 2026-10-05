@@ -2,6 +2,7 @@
 export const campaignConfig = {
   campaignName: "Nico Gives Back",
   goalAmount: 50000,
+  maxDonationAmount: 50000,
   totalRaised: 1050,
   starLightDonationUrl:
     process.env.NEXT_PUBLIC_STARLIGHT_DONATION_URL ?? "https://www.starlight.org.au/donate/?amount=39&selection=once",

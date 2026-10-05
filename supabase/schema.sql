@@ -3,7 +3,7 @@ create table if not exists public.donations (
   donor_name text not null,
   donor_email text not null,
   phone_number text,
-  amount numeric(10, 2) not null check (amount > 0),
+  amount numeric(10, 2) not null check (amount > 0 and amount <= 50000),
   organization text not null default 'Flamingo Plumbing and Roofing',
   payment_reference text,
   receipt_path text not null,
@@ -11,6 +11,16 @@ create table if not exists public.donations (
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   created_at timestamptz not null default now()
 );
+
+alter table public.donations
+  drop constraint if exists donations_amount_check;
+
+alter table public.donations
+  drop constraint if exists donations_amount_limit_check;
+
+alter table public.donations
+  add constraint donations_amount_limit_check
+  check (amount > 0 and amount <= 50000) not valid;
 
 alter table public.donations
   add column if not exists show_publicly boolean not null default false;
