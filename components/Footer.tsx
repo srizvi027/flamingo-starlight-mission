@@ -11,6 +11,9 @@ export default function Footer() {
           <li><a href="#support">Where Your Support Helps</a></li><li><a href="#donate">Donate</a></li>
         </ul>
         <p className="text-sm text-ink/70 md:col-span-2">This fundraising campaign supports Starlight Children's Foundation. Donations are completed through Starlight's official donation platform.</p>
+        <p className="text-sm text-ink/70 md:col-span-2">
+          Created by <a href="https://www.prowingz.com" target="_blank" rel="noreferrer noopener" className="underline underline-offset-2">Prowingz</a>
+        </p>
       </div>
     </footer>
   );
